@@ -1,34 +1,50 @@
+//OBJETOS EN PANTALLA
 let character;
-let fire;
-let cube;
 let cubes = [];
-let fireInstances = [];
+let fire;
+let fires = [];
 let life1;
 let life2;
 let life3;
 let pipe;
+let coins = [];
+let coinCount;
+let cloud;
 
+//IMAGENES CARGADAS
 let marioImg;
 let imgFire;
 let imgCube;
 let imgLife;
 let imgPipe;
+let imgCoin;
+let imgCoinCount;
+let imgCloud;
 
+//FUENTE
+let marioFont;
+
+//AUXILIARES
 let lastPositionCubeX = 400;
 let finish = false;
 let positionInitialX = 10;
 let positionInitialY = 10;
 let gameOver = false;
 let pipePosition = -30;
-
 let pipeVisible = true;
+let cloudFly = false;
 
 function preload(){
-    marioImg = loadImage('mario.png')
-    imgFire = loadImage('fire.gif')
-    imgCube = loadImage('bloque.png')
-    imgLife = loadImage('heart.png')
-    imgPipe = loadImage('tube.png')
+    marioImg = loadImage('./imgs/mario.png')
+    imgFire = loadImage('./imgs/fire.gif')
+    imgCube = loadImage('./imgs/bloque.png')
+    imgLife = loadImage('./imgs/heart.png')
+    imgPipe = loadImage('./imgs/tube.png')
+    imgCoin = loadImage('./imgs/coin-spin.gif')
+    imgCoinCount = loadImage('./imgs/coinCount.png')
+    imgCloud = loadImage('./imgs/cloud.png')
+
+    marioFont = loadFont('SuperMarioBros.ttf');
 }
 
 function setup() {
@@ -36,13 +52,17 @@ function setup() {
 
     pipe = new Pipe(-30, 150, 1, imgPipe)
 
-    fire = new Fire(0, 450, 0, imgFire)
+    life1 = new Life(950, 50, imgLife)
+    life2 = new Life(980, 50, imgLife)
+    life3 = new Life(1010, 50, imgLife)
 
-    life1 = new Life(1000, 50, imgLife)
-    life2 = new Life(1040, 50, imgLife)
-    life3 = new Life(1080, 50, imgLife)
+    coinCount = new Coin(1060, 37, 0, imgCoinCount)
 
-    createCanvas(1200, 600)
+    cloud = new Cloud(200, 300, 3, imgCloud)
+
+    textFont(marioFont);
+
+    createCanvas(1250, 600)
 
     createFireOnGround();
 }
@@ -64,11 +84,11 @@ function draw(){
     }
 
     //CUBOS ALEATORIAMENTE
-    makeCubes();
+    makeCubesCoins();
 
     //DIBUJA EL SUELO DE FUEGO
-    for (let i = 0; i < fireInstances.length; i++) {
-        fireInstances[i].draw();
+    for (i = 0; i < fires.length; i++) {
+        fires[i].draw();
     }
 
     //DIBUJA LA TUBERIA
@@ -77,24 +97,38 @@ function draw(){
 
 
     //HACE QUE SE PUEDA MARIO QUEDAR ENCIMA DE CUBOS Y TUBERIA
-    character.update(cubes, pipe)
-
+    character.update(cubes, pipe, coins, cloud)
+    cloud.update();
     //DIBUJA MARIO
     character.draw()
+
+    //MONEDAS
+    coinCount.draw();
+    textSize(35);
+    fill(255);
+    text(character.coinsCollected, 1105, 74)
+
+    //NUBE
+    cloud.draw()
+
+    //TEXTO DE OBJETIVO
+
+
 }
 
 function createFireOnGround() {
-    for (let x = 0; x < width; x += imgFire.width) {
-      let fireInstance = new Fire(x, height - imgFire.height, 0, imgFire);
-      fireInstances.push(fireInstance);
+    for (aux = 0; aux < width; aux += imgFire.width) {
+      fire = new Fire(aux, height - imgFire.height, 0, imgFire);
+      fires.push(fire);
     }
 }
 
-function makeCubes(){
+function makeCubesCoins(){
     let random = Math.floor(Math.random() * (400 - 300 + 1)) + 300;
 
     if(!gameOver){
         cubes.push(new Cube(lastPositionCubeX, random, 3, imgCube));
+        coins.push(new Coin(lastPositionCubeX - 10, random - 75, 3, imgCoin))
         lastPositionCubeX += 205;
     }
 
@@ -102,10 +136,15 @@ function makeCubes(){
         cubes[i].move();
         cubes[i].draw();
     }
+
+    for(i = coins.length - 1 ; i >= 0 ; i--){
+        coins[i].move();
+        coins[i].draw();
+    }
 }
 
 class Character {
-    constructor(positionX, positionY, gravity, speed, imgCharacter, life){
+    constructor(positionX, positionY, gravity, speed, imgCharacter){
         this.positionX = positionX
         this.positionY = positionY
         this.gravity = gravity
@@ -113,23 +152,35 @@ class Character {
         this.imgCharacter = imgCharacter
         this.isJumping = false;
         this.life = 3;
+        this.coinsCollected = 0;
     }
 
-    update(cubes, pipe){
+    update(cubes, pipe, coins, cloud){
         //MOVER PERSONAJE
-        if(keyIsDown(RIGHT_ARROW)){
-            this.positionX += this.speed * 2;
-        } else if(keyIsDown(LEFT_ARROW)) {
-            this.positionX -= this.speed * 1,5;
+        if(!cloudFly){
+            //no se mueve
+            if(keyIsDown(RIGHT_ARROW)){
+                this.positionX += this.speed * 2;
+            } else if(keyIsDown(LEFT_ARROW)) {
+                this.positionX -= this.speed * 1,5;
+            }
+        } else if(cloudFly){
+            this.gravity = 0; //IMPORTANTE
         }
 
         //SALTAR
-        if (keyIsDown(UP_ARROW) && !this.isJumping){
-            this.jump();            
+        if(!cloudFly){
+            if (keyIsDown(UP_ARROW) && !this.isJumping){
+                this.jump();            
+            }
         }
 
+        
+
         //CAER POR GRAVEDAD
-        this.positionY += this.gravity * 0.15;
+        if(!cloudFly){
+            this.positionY += this.gravity * 0.15;
+        }
 
         //SE ASEGURA QUE CAE AL SUELO PARA VOLVER A SALTAR
         if (this.positionY > 475) {
@@ -138,6 +189,9 @@ class Character {
         }
 
         //COLISION CON CUBOS
+        this.isCollidingCoins(coins)
+        this.isCollidingCloud(cloud)
+
         this.isCollidingCube(cubes)
         this.isCollidingPipe(pipe)
         this.isCollidingFloor()
@@ -156,6 +210,8 @@ class Character {
 
         }
 
+        //MONEDAS
+        
         //GAMEOVER
 
     }
@@ -199,6 +255,36 @@ class Character {
     isCollidingFloor(){
         if(this.positionY + this.imgCharacter.height > 475){
             finish = true;        
+        }
+    }
+
+    isCollidingCoins(){
+        for (let i = coins.length - 1; i >= 0; i--) {
+            const coin = coins[i];
+            if (
+                this.positionX + this.imgCharacter.width > coin.positionX &&
+                this.positionX < coin.positionX + coin.imgCoin.width &&
+                this.positionY + this.imgCharacter.height >= coin.positionY &&
+                this.positionY < coin.positionY
+            ) {
+                // Incrementar contador de monedas recolectadas
+                this.coinsCollected++;
+                // Eliminar la moneda del array
+                coins.splice(i, 1);
+            }
+        }
+    }
+
+    isCollidingCloud(cloud){
+        if (
+            this.positionX + this.imgCharacter.width > cloud.positionX &&
+            this.positionX < cloud.positionX + cloud.imgCloud.width &&
+            this.positionY + this.imgCharacter.height >= cloud.positionY &&
+            this.positionY < cloud.positionY
+        ) {
+            cloudFly = true;
+            this.positionX = cloud.positionX+10;
+            this.positionY = cloud.positionY -30;
         }
     }
 
@@ -272,4 +358,49 @@ class Life {
     draw(){
         image(this.imgLife, this.positionX, this.positionY)
     }
+}
+
+class Coin{
+    constructor(positionX, positionY, speed, imgCoin){
+        this.positionX = positionX;
+        this.positionY = positionY;
+        this.speed = speed;
+        this.imgCoin = imgCoin;
+    }
+    draw(){
+        image(this.imgCoin, this.positionX, this.positionY)
+    }
+
+    move(){
+        if(!gameOver){
+        this.positionX -= this.speed;
+        }
+    }
+}
+
+class Cloud{
+    constructor(positionX, positionY, speed, imgCloud){
+        this.positionX = positionX;
+        this.positionY = positionY;
+        this.speed = speed;
+        this.imgCloud = imgCloud;
+    }
+    draw(){
+        image(this.imgCloud, this.positionX, this.positionY)
+    }
+
+    update(){
+        if(cloudFly){
+            if(keyIsDown(RIGHT_ARROW)){
+                this.positionX += this.speed * 2;
+            } else if(keyIsDown(LEFT_ARROW)) {
+                this.positionX -= this.speed * 2;
+            } else if(keyIsDown(UP_ARROW)) {
+                this.positionY -= this.speed * 2;
+            } else if(keyIsDown(DOWN_ARROW)) {
+                this.positionY += this.speed * 2;
+            }
+        }
+    }
+    
 }

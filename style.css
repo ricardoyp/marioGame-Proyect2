@@ -1,0 +1,26 @@
+@font-face {
+    font-family: 'NombreDeLaFuente';
+    src: url('SuperMarioBros.ttf') format('truetype');
+}
+
+* {
+    background-color: black;
+    font-family: 'NombreDeLaFuente';
+}
+
+button {
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+    width: 50px;
+    height: 50px;
+    font-size: 30px;
+    
+}
+
+#MAPAS {
+    display: flex;
+    flex-direction: center;
+    justify-content: center;
+    gap: 50px;
+    padding: 15px;
+}
