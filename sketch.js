@@ -63,6 +63,7 @@ function preload(){
     imgCastle = loadImage('./imgs/castle.png')
 
     marioFont = loadFont('SuperMarioBros.ttf');
+    
 }
 
 function setup() {
