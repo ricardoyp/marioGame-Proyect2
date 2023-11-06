@@ -8,7 +8,9 @@ let life3;
 let pipe;
 let coinCount;
 let cloud;
-let cubes = [];
+let cubesLevel1 = [];
+let cubesLevel2 = [];
+
 let coins = [];
 let fires = [];
 let fireballs = [];
@@ -33,7 +35,7 @@ let marioFont;
 
 //AUXILIARES
 let lastPositionCubeX = 400;
-let positionInitialX = 0;
+let positionInitialX = 900;
 let positionInitialY = 0;
 let pipePosition = -30;
 
@@ -46,7 +48,7 @@ let pipeVisible = true;
 let cloudFly = false;
 
 //NIVELES
-let actualLevel = 1;
+let actualLevel = 2;
 
 function preload(){
     marioImg = loadImage('./imgs/mario.png')
@@ -63,7 +65,7 @@ function preload(){
     imgCastle = loadImage('./imgs/castle.png')
 
     marioFont = loadFont('SuperMarioBros.ttf');
-    
+
 }
 
 function setup() {
@@ -76,7 +78,6 @@ function setup() {
         level1SetUp();
     }
     if (actualLevel === 2){
-        console.log("setup2")
         level2SetUp();
     }
 }
@@ -96,6 +97,11 @@ function level1SetUp(){
         fire = new Fire(aux, height - imgFire.height, 0, imgFire);
         fires.push(fire);
     }
+
+    lastPositionCubeX = 400;
+    cubesLevel1 = []
+    coins = []
+
 }
 
 function level2SetUp(){
@@ -107,20 +113,23 @@ function level2SetUp(){
     life3 = new Life(1010, 50, imgLife)
 
     //ESCALERA DE CUBOS
+
+    cubesLevel2 = [];
+
     for(i = 0; i < 5; i++){
-        cubes.push(new Cube((imgCube.width * 5) + (imgCube.width * i), height - (2 * imgCube.height), 0, imgCube))
+        cubesLevel2.push(new Cube((imgCube.width * 5) + (imgCube.width * i), height - (2 * imgCube.height), 0, imgCube))
     }
     for(i = 0; i < 4; i++){
-        cubes.push(new Cube((imgCube.width * 6) + (imgCube.width * i), height - (3 * imgCube.height), 0, imgCube))
+        cubesLevel2.push(new Cube((imgCube.width * 6) + (imgCube.width * i), height - (3 * imgCube.height), 0, imgCube))
     }
     for(i = 0; i < 3; i++){
-        cubes.push(new Cube((imgCube.width * 7) + (imgCube.width * i), height - (4 * imgCube.height), 0, imgCube))
+        cubesLevel2.push(new Cube((imgCube.width * 7) + (imgCube.width * i), height - (4 * imgCube.height), 0, imgCube))
     }
 
     //CUBO 3X3
     for (i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
-          cubes.push(new Cube((imgCube.width * 13) + (imgCube.width * j), height - (2 * imgCube.height) - (imgCube.height * i), 0, imgCube));
+            cubesLevel2.push(new Cube((imgCube.width * 13) + (imgCube.width * j), height - (2 * imgCube.height) - (imgCube.height * i), 0, imgCube));
         }
     }
 
@@ -128,7 +137,7 @@ function level2SetUp(){
     for (let x = 18; x <= 30; x += 4) {
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 2; j++) {
-            cubes.push(new Cube((imgCube.width * x) + (imgCube.width * j), height - (2 * imgCube.height) - (imgCube.height * i), 0, imgCube));
+                cubesLevel2.push(new Cube((imgCube.width * x) + (imgCube.width * j), height - (2 * imgCube.height) - (imgCube.height * i), 0, imgCube));
             }
         }
     }
@@ -136,22 +145,28 @@ function level2SetUp(){
     //BASE CASTILLO
     for (i = 0; i < 3; i++) {
         for (let j = 0; j < 8; j++) {
-          cubes.push(new Cube((imgCube.width * 34) + (imgCube.width * j), height - (2 * imgCube.height) - (imgCube.height * i), 0, imgCube));
+            cubesLevel2.push(new Cube((imgCube.width * 34) + (imgCube.width * j), height - (2 * imgCube.height) - (imgCube.height * i), 0, imgCube));
         }
     }
 
     //BOLAS DE FUEGO
-    for(i=0; i < 4; i++){
+    fireballs = [];
+
+    for(i=0; i < 5; i++){
         fireballs.push(new FireBall(490 + (120*i), 520, 6+i, imgFireBallUp, imgFireBallDown))
     }
     fireballs.push (new FireBall (325, 520, 5, imgFireBallUp, imgFireBallDown))
 
     //LAVAS
+    lavas = [ ];
+
     for(i=0; i < 4; i++){
         lavas.push(new FireBall(300 + (i*180) , height - imgLava.height - imgCube.height , 0, imgLava))
     }
 
     //SUELO
+    fires = [];
+
     for (aux = 0; aux < width; aux += imgCube.width) {
         fire = new Fire(aux, height - imgCube.height, 0, imgCube);
         fires.push(fire);
@@ -171,11 +186,13 @@ function level2SetUp(){
 
 function draw(){
     //FONDO
-    background(99, 152, 251);
 
     if(actualLevel === 1){
+        background(99, 152, 251);
+
         drawLevel1();
     } if(actualLevel === 2){
+        background(0);
         drawLevel2();
     }
 }
@@ -196,13 +213,13 @@ function drawLevel1(){
     //CUBOS ALEATORIAMENTE
     let random = Math.floor(Math.random() * (400 - 300 + 1)) + 300;
     
-    cubes.push(new Cube(lastPositionCubeX, random, 3, imgCube));
+    cubesLevel1.push(new Cube(lastPositionCubeX, random, 3, imgCube));
     coins.push(new Coin(lastPositionCubeX - 10, random - 75, 3, imgCoin))
     lastPositionCubeX += 205;
     
-    for(i = cubes.length - 1 ; i >= 0 ; i--){
-        cubes[i].move();
-        cubes[i].draw();
+    for(i = cubesLevel1.length - 1 ; i >= 0 ; i--){
+        cubesLevel1[i].move();
+        cubesLevel1[i].draw();
     }
     
     for(i = coins.length - 1 ; i >= 0 ; i--){
@@ -224,7 +241,7 @@ function drawLevel1(){
 
     //COLISIONES
     character.isCollidingPipe(pipe);
-    character.isCollidingCube(cubes);
+    character.isCollidingCube(cubesLevel1);
     character.isCollidingCoins(coins);
     character.isCollidingFires(imgFire);
 
@@ -270,8 +287,8 @@ function drawLevel2(){
     }
 
     //DIBUJAR CUBOS EN EL SUELO
-    for(i = 0; i < cubes.length ;i++){
-        cubes[i].draw();
+    for(i = 0; i < cubesLevel2.length ;i++){
+        cubesLevel2[i].draw();
     }
 
     //CASTILLO
@@ -279,7 +296,7 @@ function drawLevel2(){
 
     //COLISIONES
     character.isCollidingFloor(imgCube);
-    character.isCollidingCube(cubes);
+    character.isCollidingCube(cubesLevel2);
     character.isCollidingFireBall(fireballs);
     character.isCollidingFireBall(lavas);
     character.isCollidingCastle(castle)
@@ -386,7 +403,7 @@ class Character {
             ) {
                 this.positionY = pipe.positionY - this.imgCharacter.height;
                 this.isJumping = false;
-                pipeVisible = false;
+                //pipeVisible = false;
             }
         }
 
@@ -457,10 +474,11 @@ class Character {
         if (
             this.positionX + this.imgCharacter.width > castle.positionX &&
             this.positionX < castle.positionX + castle.imgFire.width &&
-            this.positionY + this.imgCharacter.height >= castle.positionY &&
-            this.positionY < castle.positionY
+            this.positionY + this.imgCharacter.height >= castle.positionY
         ) {
-            console.log("win")
+            actualLevel--;
+            clear();
+            setup();
         }
     }
 
