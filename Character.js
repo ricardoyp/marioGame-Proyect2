@@ -8,6 +8,7 @@ class Character {
         this.isJumping = true;
         this.life = 3;
         this.coinsCollected = 0;
+        this.isAttacking = true;
     }
 
     update(){
@@ -19,8 +20,6 @@ class Character {
             } else if(keyIsDown(LEFT_ARROW)) {
                 this.positionX -= this.speed * 1,5;
             }
-        } else if(cloudFly){
-            this.gravity = 0; //IMPORTANTE
         }
 
         //SALTAR
@@ -124,9 +123,11 @@ class Character {
             this.positionY + this.imgCharacter.height >= cloud.positionY &&
             this.positionY < cloud.positionY
         ) {
-            cloudFly = true;
+            if(this !== bowser) {
+                cloudFly = true;
+            }
             this.positionX = cloud.positionX + 10;
-            this.positionY = cloud.positionY - 30;
+            this.positionY = cloud.positionY - 40;
         }
     }
 
@@ -150,7 +151,7 @@ class Character {
             this.positionX < castle.positionX + castle.imgFire.width &&
             this.positionY + this.imgCharacter.height >= castle.positionY
         ) {
-            actualLevel--;
+            actualLevel++;
             clear();
             setup();
         }
@@ -159,4 +160,6 @@ class Character {
     draw(){
         image(this.imgCharacter, this.positionX, this.positionY)
     }
+
+
 }

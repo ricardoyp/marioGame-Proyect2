@@ -89,7 +89,10 @@ class Cloud{
         this.positionY = positionY;
         this.speed = speed;
         this.imgCloud = imgCloud;
+        this.movingUp = true;
+        this.originalPositionY = 500;
     }
+
     draw(){
         image(this.imgCloud, this.positionX, this.positionY)
     }
@@ -107,7 +110,22 @@ class Cloud{
             }
         }
     }
-    
+
+    //MUEVE BOWSER ARRIBA Y ABAJO
+    bowserDefense(){
+        if (this.movingUp) {
+            this.positionY -= this.speed;
+            if (this.positionY <= this.originalPositionY - 450) {
+                this.movingUp = false;
+            }
+        } else {
+            this.positionY += this.speed;
+            if (this.positionY >= this.originalPositionY) {
+                this.movingUp = true;
+            }
+        }
+    }
+
 }
 
 class FireBall{
@@ -143,3 +161,21 @@ class FireBall{
         }
     }
 }
+
+class BallAttack{
+    constructor(positionX, positionY, speed, imgAttack){
+        this.positionX = positionX
+        this.positionY = positionY
+        this.speed = speed;
+        this.imgAttack = imgAttack;
+    }
+
+    draw(){
+        image(this.imgAttack, this.positionX, this.positionY)
+    }
+    
+    moveMario(){
+        this.positionX += this.speed;
+    }
+}
+

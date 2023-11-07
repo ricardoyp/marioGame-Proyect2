@@ -1,5 +1,6 @@
 //OBJETOS EN PANTALLA
 let character;
+let bowser;
 
 let fire;
 let life1;
@@ -8,8 +9,12 @@ let life3;
 let pipe;
 let coinCount;
 let cloud;
+let cloudMario;
 let cubesLevel1 = [];
 let cubesLevel2 = [];
+let attacks = [];
+
+let onlyOneAttack;
 
 let coins = [];
 let fires = [];
@@ -29,13 +34,14 @@ let imgCloud;
 let imgFireBallUp;
 let imgFireBallDown;
 let imgCastle;
+let imgBowser;
 
 //FUENTE
 let marioFont;
 
 //AUXILIARES
 let lastPositionCubeX = 400;
-let positionInitialX = 900;
+let positionInitialX = 100;
 let positionInitialY = 0;
 let pipePosition = -30;
 
@@ -63,6 +69,9 @@ function preload(){
     imgFireBallDown = loadImage('./imgs/fireballDown.gif')
     imgLava = loadImage('./imgs/lava.png')
     imgCastle = loadImage('./imgs/castle.png')
+    imgCastleWallPaper = loadImage('./imgs/castilloFondo.gif')
+    imgAttackFireBll = loadImage('./imgs/AttackFireball.png')
+    imgBowser = loadImage('./imgs/bowser.png')
 
     marioFont = loadFont('SuperMarioBros.ttf');
 
@@ -80,10 +89,30 @@ function setup() {
     if (actualLevel === 2){
         level2SetUp();
     }
+    if(actualLevel === 3){
+        level3SetUp();
+    }
+}
+
+function draw(){
+    //FONDO
+
+    if(actualLevel === 1){
+        background(99, 152, 251);
+        drawLevel1();
+    }
+    if(actualLevel === 2){
+        background(0);
+        drawLevel2();
+    }
+    if(actualLevel === 3){
+        background(imgCastleWallPaper);
+        drawLevel3();
+    }
 }
 
 function level1SetUp(){
-    character = new Character(50, 0, 20, 3.5 , marioImg)
+    character = new Character(positionInitialX, positionInitialY, 20, 3.5 , marioImg)
 
     pipe = new Pipe(-30, 150, 1, imgPipe)
 
@@ -164,7 +193,7 @@ function level2SetUp(){
         lavas.push(new FireBall(300 + (i*180) , height - imgLava.height - imgCube.height , 0, imgLava))
     }
 
-    //SUELO
+    //SUELO DE CUBE - UNA FILA
     fires = [];
 
     for (aux = 0; aux < width; aux += imgCube.width) {
@@ -184,17 +213,25 @@ function level2SetUp(){
 
 }
 
-function draw(){
-    //FONDO
+function level3SetUp(){
 
-    if(actualLevel === 1){
-        background(99, 152, 251);
+    character = new Character(positionInitialX, positionInitialY, 20, 3.5 , marioImg);
+    bowser = new Character(800, 300, 1, 3.5, imgBowser)
 
-        drawLevel1();
-    } if(actualLevel === 2){
-        background(0);
-        drawLevel2();
+    //VIDAS
+    life1 = new Life(1100, 50, imgLife)
+    life2 = new Life(1130, 50, imgLife)
+    life3 = new Life(1160, 50, imgLife)
+
+    fires = [];
+
+    for(i = 0; i < 5; i++){
+        fires.push(new Cube((imgCube.width * 0) + (imgCube.width * i), height - (1 * imgCube.height), 0, imgCube))
     }
+
+    cloudMario = new Cloud (230, 500, 3, imgCloud);
+    cloudBowser = new Cloud(800, 360, 3, imgCloud);
+
 }
 
 function drawLevel1(){
@@ -310,4 +347,58 @@ function drawLevel2(){
     textSize(35);
     fill(255);
     text(character.coinsCollected, 1105, 74)
+}
+
+function drawLevel3(){
+    //DIBUJA VIDAS
+    if(character.life === 3){
+        life1.draw()
+        life2.draw()
+        life3.draw()
+    } else if (character.life === 2){
+        life3.draw()
+        life2.draw()
+    } else if (character.life === 1){
+        life3.draw()
+    }
+
+    //BLOQUES INICIALES
+    for (i = 0; i < fires.length; i++) {
+        fires[i].draw();
+    }
+
+    //COLISIONES
+    character.isCollidingCube(fires)
+    character.isCollidingCloud(cloudMario)
+
+    bowser.isCollidingCloud(cloudBowser)
+    
+
+    if(cloudFly){
+        if(keyIsDown(32) && onlyOneAttack === true){
+            attacks.push(new BallAttack(character.positionX, character.positionY + 15  , 7, imgAttackFireBll))
+            onlyOneAttack = false;
+        }
+        for(i=0; i < attacks.length; i++){
+            attacks[i].moveMario();
+            attacks[i].draw();
+        }
+        if(!keyIsDown(32)){
+            onlyOneAttack = true;
+        }
+    }
+
+    character.update();
+
+
+    bowser.draw()
+
+    character.draw()
+
+    cloudMario.update()
+    cloudMario.draw()
+
+    cloudBowser.bowserDefense()
+    cloudBowser.draw()
+
 }
