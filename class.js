@@ -10,9 +10,8 @@ class Cube{
     }
 
     move(){
-        if(!gameOver){
         this.positionX -= this.speed;
-        }
+        
     }
 }
 
@@ -28,15 +27,12 @@ class Pipe{
     }
 
     move(){
-        if(!gameOver){
             if(!pipeVisible){
                 this.positionX -= this.speed;
             }
             if (pipeVisible){
                 this.positionX = -30;
-            }
-        }
-        
+            }        
     }
 }
 

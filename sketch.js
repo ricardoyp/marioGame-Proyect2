@@ -45,7 +45,7 @@ let pipeVisible = true;
 let cloudFly = false;
 
 //NIVELES
-let actualLevel = 3;
+let actualLevel = 1;
 
 function preload(){
     marioImg = loadImage('./imgs/mario.png')
@@ -71,6 +71,7 @@ function preload(){
     imgAttackFireBll = loadImage('./imgs/AttackFireball.png')
     imgBowser = loadImage('./imgs/bowser.png')
     imgAttackFireBllBowser = loadImage('./imgs/AttackFireballBowser.gif')
+    imgMarioWin = loadImage ('./imgs/win.gif')
 
     marioFont = loadFont('SuperMario256.ttf');
 
@@ -95,48 +96,64 @@ function setup() {
 }
 
 function draw(){
-    //FONDO
-    if(actualLevel === 0 && !gameOver){
-        background(0);
-        drawLevel0();
-    }
-    if(actualLevel === 1 && !gameOver){
-        background(99, 152, 251);
-        drawLevel1();
-    }
-    if(actualLevel === 2 && !gameOver){
-        background(0);
-        drawLevel2();
-    }
-    if(actualLevel === 3 && !gameOver){
-        background(imgCastleWallPaper);
-        drawLevel3();
-    }
 
     if(gameOver){
-        clear()
+        clear();
         fill(250);
         textSize(52);
         textFont(marioFont);
         textAlign(CENTER); // Centra el texto horizontal y verticalmente
         text("GAME OVER", width/2, 260)
-        
+
         textSize(22);
-        text("PULSA UNA TECLA PARA VOLVER A EMPEZAR", width/2, 360)
-        if(keyIsPressed === true){
+        text("PULSA LA TECLA ENTER PARA VOLVER A EMPEZAR", width/2, 360)
+        if(keyIsDown(13)){
+            gameOver = false;
             actualLevel = 0;
             clear();
-            setup()
-            gameOver = false;
-            ;
+            setup();
         }
     }
+    if(win){
+        clear();
+        fill(250);
+        textSize(55);
+        textFont(marioFont);
+        textAlign(CENTER); // Centra el texto horizontal y verticalmente
+        text("!!! VICTORIA !!!", width/2, 300);
+        textSize(20);
+        text("Pulsa la tecla Enter para volver a empezar", width/2, 400)
+        if(keyIsDown(13)){
+            actualLevel = 0;
+            clear();
+            setup();
+        }
+        win = false
+    }
+    //FONDO
+    if(actualLevel === 0 && !gameOver && !win){
+        background(0);
+        drawLevel0();
+    }
+    if(actualLevel === 1 && !gameOver && !win){
+        background(99, 152, 251);
+        drawLevel1();
+    }
+    if(actualLevel === 2 && !gameOver && !win){
+        background(0);
+        drawLevel2();
+    }
+    if(actualLevel === 3 && !gameOver && !win){
+        background(imgCastleWallPaper);
+        drawLevel3();
+    } 
+
 
 
 }
-
-
+ 
 function level1SetUp(){
+    cloudFly = false;
 
     finish = false;
 
@@ -174,9 +191,10 @@ function level1SetUp(){
 }
 
 function level2SetUp(){
+    cloudFly = false;
 
-    positionInitialX = 50;
-    positionInitialY = 450;
+    positionInitialX = 1000;
+    positionInitialY = 60;
 
     character = new Character(positionInitialX, positionInitialY, 20, 3.5 , player, 3);
 
@@ -436,6 +454,7 @@ function drawLevel3(){
         attacksBowser[i].moveBowser();
         attacksBowser[i].draw();
     }
+    character.update();
 
     //COLISIONES MARIO
     character.isCollidingCube(fires)
@@ -446,7 +465,6 @@ function drawLevel3(){
     bowser.isCollidingCloud(cloudBowser)
     bowser.isCollidingAttack(attacks);
     
-    character.update();
 
     bowser.draw()
 
@@ -465,14 +483,28 @@ function drawLevel3(){
     for (i = 0; i < bowser.life; i++) {
         lifesBowser[i].draw();
     }
-    if(gameOver){
-        clear()
-        textSize(52);
-        textFont(marioFont);
-        textAlign(CENTER);
-        text("ELIGE PERSONAJE", width/2, 100)
+
+    if (bowser.life <= 0){
+        win = true;
     }
 
+}
+
+function keyPressed() {
+    if(actualLevel === 0){
+        if (key === '1') {
+            player = marioImg;
+            actualLevel=1;
+            clear();
+            setup();
+        } else if (key === '2') {
+            player = luigiImg;
+            actualLevel=1;
+            clear();
+            setup();
+        }
+    }
+    
 }
 
 function drawLevel0(){
@@ -485,24 +517,14 @@ function drawLevel0(){
 
     textSize(32);
     text("MARIO", (width/2) - 300, 230)
-    text("LUIGI", (width/2) + 300, 180)
+    text("LUIGI", (width/2) + 300, 230)
 
     textSize(22);
-    text("PULSA (->) PARA SELECCIONAR A MARIO", (width/2) - 300, 480)
-    text("PULSA (<-) PARA SELECCIONAR A LUIGI", (width/2) + 300, 480)
+    text("PULSA (1) PARA SELECCIONAR A MARIO", (width/2) - 300, 480)
+    text("PULSA (2) PARA SELECCIONAR A LUIGI", (width/2) + 300, 480)
 
     image(seleccionMario, (width/2 - 76) - 300, 250, 152, 200)
     image(seleccionLuigi,(width/2 - 76) + 300, 250, 152, 200)
 
-    if(keyIsDown(RIGHT_ARROW)){
-        player = marioImg;
-        actualLevel = 1;
-        clear();
-        setup();
-    } else if(keyIsDown(LEFT_ARROW)) {
-        player = luigiImg;
-        actualLevel = 1;
-        clear();
-        setup();
-    }
 }
+

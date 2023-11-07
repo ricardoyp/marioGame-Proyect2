@@ -38,9 +38,6 @@ class Character {
         }
 
         //FINISH
-        if(this.life <= 0){
-            gameOver = true;
-        }
         if(finish){
             console.log("finish")
             this.life--;
@@ -48,6 +45,10 @@ class Character {
             this.positionY = positionInitialY;
             pipeVisible = true;
             finish = false;
+        }
+
+        if(this.life <= 0){
+            gameOver = true;
         }
     }
 
@@ -76,7 +77,7 @@ class Character {
             ) {
                 this.positionY = pipe.positionY - this.imgCharacter.height;
                 this.isJumping = false;
-                //pipeVisible = false;
+                pipeVisible = false;
             }
         }
 
@@ -104,8 +105,7 @@ class Character {
             ) {
                 // Incrementar contador de monedas recolectadas
                 this.coinsCollected++;
-                if(this.coinsCollected === 10){
-                    //win = true;
+                if(this.coinsCollected === 1){
                     actualLevel++;
                     clear();
                     setup();
