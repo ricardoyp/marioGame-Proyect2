@@ -115,7 +115,7 @@ class Cloud{
     bowserDefense(){
         if (this.movingUp) {
             this.positionY -= this.speed;
-            if (this.positionY <= this.originalPositionY - 450) {
+            if (this.positionY <= this.originalPositionY - 380) {
                 this.movingUp = false;
             }
         } else {
@@ -176,6 +176,10 @@ class BallAttack{
     
     moveMario(){
         this.positionX += this.speed;
+    }
+
+    moveBowser(){
+        this.positionX -= this.speed;
     }
 }
 

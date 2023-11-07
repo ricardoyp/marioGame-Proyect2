@@ -1,12 +1,12 @@
 class Character {
-    constructor(positionX, positionY, gravity, speed, imgCharacter){
+    constructor(positionX, positionY, gravity, speed, imgCharacter, life){
         this.positionX = positionX
         this.positionY = positionY
         this.gravity = gravity
         this.speed = speed
         this.imgCharacter = imgCharacter
         this.isJumping = true;
-        this.life = 3;
+        this.life = life;
         this.coinsCollected = 0;
         this.isAttacking = true;
     }
@@ -42,12 +42,12 @@ class Character {
             gameOver = true;
         }
         if(finish){
-            this.life -= 1;
-            this.positionY = positionInitialY;
+            console.log("finish")
+            this.life--;
             this.positionX = positionInitialX;
+            this.positionY = positionInitialY;
             pipeVisible = true;
             finish = false;
-
         }
     }
 
@@ -93,8 +93,8 @@ class Character {
         }
     }
 
-    isCollidingCoins(){
-        for (let i = coins.length - 1; i >= 0; i--) {
+    isCollidingCoins(coins){
+        for (i = coins.length - 1; i >= 0; i--) {
             const coin = coins[i];
             if (
                 this.positionX + this.imgCharacter.width > coin.positionX &&
@@ -104,7 +104,7 @@ class Character {
             ) {
                 // Incrementar contador de monedas recolectadas
                 this.coinsCollected++;
-                if(this.coinsCollected === 1){
+                if(this.coinsCollected === 10){
                     //win = true;
                     actualLevel++;
                     clear();
@@ -157,6 +157,21 @@ class Character {
         }
     }
 
+    isCollidingAttack(attacks){
+        for(i = 0; i<attacks.length; i++){
+            let attack = attacks[i];
+            if (
+                this.positionX + this.imgCharacter.width > attack.positionX &&
+                this.positionX < attack.positionX + attack.imgAttack.width &&
+                this.positionY + this.imgCharacter.height >= attack.positionY &&
+                this.positionY < attack.positionY + attack.imgAttack.height
+            ){
+                this.life--;
+                attacks.splice(i, 1);
+            }
+        }
+    }
+    
     draw(){
         image(this.imgCharacter, this.positionX, this.positionY)
     }
