@@ -53,19 +53,19 @@ class Character {
     }
 
     isCollidingCube(cubes){
-        for (let i = 0; i < cubes.length; i++) {
-            const cube = cubes[i];
-            if (
-                this.positionX + this.imgCharacter.width > cube.positionX &&
-                this.positionX < cube.positionX + cube.imgCube.width &&
-                this.positionY + this.imgCharacter.height >= cube.positionY &&
-                this.positionY < cube.positionY
-            ) {
-                // Detener la caída y ajustar la posición
-                this.positionY = cube.positionY - this.imgCharacter.height;
-                this.isJumping = false;
-            }
+        const collidingCube = cubes.find(cube => (
+            this.positionX + this.imgCharacter.width > cube.positionX &&
+            this.positionX < cube.positionX + cube.imgCube.width &&
+            this.positionY + this.imgCharacter.height >= cube.positionY &&
+            this.positionY < cube.positionY
+        ));
+        
+        if (collidingCube) {
+            // Detener la caída y ajustar la posición
+            this.positionY = collidingCube.positionY - this.imgCharacter.height;
+            this.isJumping = false;
         }
+        
     }
 
     isCollidingPipe(pipe){
