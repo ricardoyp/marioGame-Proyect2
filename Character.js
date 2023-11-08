@@ -85,6 +85,11 @@ class Character {
         if(this.positionY + this.imgCharacter.height > height - img.height){
             finish = true;        
         }
+        if(cloudFly && finish){
+            cloudMario.positionX = 230;
+            cloudMario.positionY = 500;
+            cloudFly = false;
+        }
     }
 
     isCollidingFloor(img){

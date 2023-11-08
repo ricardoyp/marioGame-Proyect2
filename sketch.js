@@ -44,8 +44,10 @@ let gameOver = false;
 let pipeVisible = true;
 let cloudFly = false;
 
+let firstTime = true;
+
 //NIVELES
-let actualLevel = 1;
+let actualLevel = 0;
 
 function preload(){
     marioImg = loadImage('./imgs/mario.png')
@@ -79,7 +81,7 @@ function preload(){
 
 function setup() {
 
-    player = luigiImg;
+    //player = luigiImg;
     textFont(marioFont);
 
     createCanvas(1250, 600)
@@ -114,6 +116,7 @@ function draw(){
             setup();
         }
     }
+
     if(win){
         clear();
         fill(250);
@@ -123,13 +126,17 @@ function draw(){
         text("!!! VICTORIA !!!", width/2, 300);
         textSize(20);
         text("Pulsa la tecla Enter para volver a empezar", width/2, 400)
+        attacksBowser = [];
+
         if(keyIsDown(13)){
             actualLevel = 0;
             clear();
             setup();
+            win = false
+
         }
-        win = false
     }
+
     //FONDO
     if(actualLevel === 0 && !gameOver && !win){
         background(0);
@@ -148,10 +155,8 @@ function draw(){
         drawLevel3();
     } 
 
-
-
 }
- 
+
 function level1SetUp(){
     cloudFly = false;
 
@@ -311,14 +316,20 @@ function level3SetUp(){
     cloudMario = new Cloud (230, 500, 3, imgCloud);
     cloudBowser = new Cloud(800, 360, 3, imgCloud);
 
-    //ATAQUE BOWSER - MARIO
-    setInterval(function() {
-        attacksBowser.push(new BallAttack(bowser.positionX, bowser.positionY + 15, 7, imgAttackFireBllBowser))
-        attacksBowser[i].moveMario();
-        attacksBowser[i].draw();
-        i++; // Aumenta el valor de i para cada ataque
-    }, 2000);
+    //ATAQUES BOWSER Y MARIO
+    attacks = [];
 
+    //ATAQUE BOWSER - MARIO
+    if(firstTime){
+        setInterval(function() {
+            attacksBowser.push(new BallAttack(bowser.positionX, bowser.positionY + 15, 7, imgAttackFireBllBowser))
+            attacksBowser[i].moveMario();
+            attacksBowser[i].draw();
+            i++; // Aumenta el valor de i para cada ataque
+        }, 500);
+        firstTime = false;
+
+    }   
 }
 
 function drawLevel1(){
@@ -459,6 +470,7 @@ function drawLevel3(){
     //COLISIONES MARIO
     character.isCollidingCube(fires)
     character.isCollidingCloud(cloudMario)
+    character.isCollidingFires(imgLife);
     character.isCollidingAttack(attacksBowser)
 
     //COLISIONES BOWSER
