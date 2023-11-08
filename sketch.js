@@ -3,6 +3,7 @@ let character;
 let bowser;
 
 let player;
+let nombre;
 
 let fire;
 
@@ -49,6 +50,20 @@ let firstTime = true;
 //NIVELES
 let actualLevel = 0;
 
+function mostrarJuego() {
+    const name = document.getElementById('name');
+    const firstScreen = document.getElementById('firstScreen');
+    const game = document.getElementById('game');
+
+    // Obtener el valor del input y mostrarlo en div2
+        nombre = name.value;
+    
+
+    // Ocultar div1 y mostrar div2
+    firstScreen.style.display = 'none';
+    game.style.display = 'block';
+}
+
 function preload(){
     marioImg = loadImage('./imgs/mario.png')
     luigiImg = loadImage('./imgs/luigi.png')
@@ -84,7 +99,9 @@ function setup() {
     //player = luigiImg;
     textFont(marioFont);
 
-    createCanvas(1250, 600)
+    let canvas = createCanvas(1250, 600)
+    canvas.parent('juego')
+
 
     if(actualLevel === 1){
         level1SetUp();
@@ -116,7 +133,6 @@ function draw(){
             setup();
         }
     }
-
     if(win){
         clear();
         fill(250);
@@ -147,7 +163,7 @@ function draw(){
         drawLevel1();
     }
     if(actualLevel === 2 && !gameOver && !win){
-        background(0);
+        background(180, 0, 0);
         drawLevel2();
     }
     if(actualLevel === 3 && !gameOver && !win){
@@ -158,6 +174,7 @@ function draw(){
 }
 
 function level1SetUp(){
+
     cloudFly = false;
 
     finish = false;
@@ -235,15 +252,15 @@ function level2SetUp(){
 
     //CUBO 3X3
     for (i = 0; i < 3; i++) {
-        for (let j = 0; j < 3; j++) {
+        for (j = 0; j < 3; j++) {
             cubesLevel2.push(new Cube((imgCube.width * 13) + (imgCube.width * j), height - (2 * imgCube.height) - (imgCube.height * i), 0, imgCube));
         }
     }
 
     //CUBOS 2X3
-    for (let x = 18; x <= 30; x += 4) {
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 2; j++) {
+    for (x = 18; x <= 30; x += 4) {
+        for (i = 0; i < 3; i++) {
+            for (j = 0; j < 2; j++) {
                 cubesLevel2.push(new Cube((imgCube.width * x) + (imgCube.width * j), height - (2 * imgCube.height) - (imgCube.height * i), 0, imgCube));
             }
         }
@@ -251,7 +268,7 @@ function level2SetUp(){
 
     //BASE CASTILLO
     for (i = 0; i < 3; i++) {
-        for (let j = 0; j < 8; j++) {
+        for (j = 0; j < 8; j++) {
             cubesLevel2.push(new Cube((imgCube.width * 34) + (imgCube.width * j), height - (2 * imgCube.height) - (imgCube.height * i), 0, imgCube));
         }
     }
@@ -271,14 +288,12 @@ function level2SetUp(){
 
     //SUELO DE CUBE - UNA FILA
     fires = [];
+
     for (aux = 0; aux < width; aux += imgCube.width) {
-        fire = new Fire(aux, height - imgCube.height, 0, imgCube);
-        fires.push(fire);
+        fires.push(new Fire(aux, height - imgCube.height, 0, imgCube));
     }
 
-    for (i = 0; i < fires.length; i++) {
-        fires[i].draw();
-    }
+    fires.forEach((fire) => fire.draw())
 
     //CASTILLO
     castle = new Fire(1100, 340, 0, imgCastle)
@@ -333,6 +348,11 @@ function level3SetUp(){
 }
 
 function drawLevel1(){
+
+    //NOMBRE
+    textSize(20)
+    text(nombre, width/2, 50);
+
     //DIBUJA LOS CORAZONES DE VIDA
     for (i = 0; i < character.life; i++) {
         lifesMario[i].draw();
@@ -356,9 +376,7 @@ function drawLevel1(){
     }
 
     //DIBUJA EL SUELO DE FUEGO
-    for (i = 0; i < fires.length; i++) {
-        fires[i].draw();
-    }
+    fires.forEach((fire) => fire.draw())
 
     //DIBUJA LA TUBERIA
     pipe.move();
@@ -396,24 +414,16 @@ function drawLevel2(){
     }
 
     //DIBUJA MONEDAS
-    for(i = 0; i < coinsLevel2.length ;i++){
-        coinsLevel2[i].draw();
-    }
+    coinsLevel2.forEach((coin) => coin.draw())
 
     //DIBUJA EL SUELO DE BLOQUES
-    for (i = 0; i < fires.length; i++) {
-        fires[i].draw();
-    }
+    fires.forEach((fire) => fire.draw())
 
     //DIBUJA LA LAVA
-    for (i = 0; i < lavas.length; i++) {
-        lavas[i].draw()
-    }
+    lavas.forEach((lava) => lava.draw())
 
     //DIBUJAR CUBOS EN EL SUELO
-    for(i = 0; i < cubesLevel2.length ;i++){
-        cubesLevel2[i].draw();
-    }
+    cubesLevel2.forEach((cube) => cube.draw())
 
     //CASTILLO
     castle.draw()
@@ -441,9 +451,7 @@ function drawLevel2(){
 function drawLevel3(){
 
     //BLOQUES INICIALES
-    for (i = 0; i < fires.length; i++) {
-        fires[i].draw();
-    }
+    fires.forEach((fire) => fire.draw())
 
     //ATAQUES MARIO - BOWSER
     if(cloudFly){
@@ -451,20 +459,23 @@ function drawLevel3(){
             attacks.push(new BallAttack(character.positionX, character.positionY + 15  , 7, imgAttackFireBll))
             onlyOneAttack = false;
         }
-        for(i=0; i < attacks.length; i++){
-            attacks[i].moveMario();
-            attacks[i].draw();
-        }
+
+        attacks.forEach(attack => {
+            attack.moveMario();
+            attack.draw();
+        });
+
         if(!keyIsDown(32)){
             onlyOneAttack = true;
         }
     }
 
     //ATAQUES BOWSER - MARIO
-    for(i=0; i < attacksBowser.length; i++){
-        attacksBowser[i].moveBowser();
-        attacksBowser[i].draw();
-    }
+    attacksBowser.forEach((attack) => {
+        attack.moveBowser();
+        attack.draw();
+    });
+
     character.update();
 
     //COLISIONES MARIO
@@ -524,8 +535,14 @@ function drawLevel0(){
     fill(250);
     textSize(52);
     textFont(marioFont);
-    textAlign(CENTER); // Centra el texto horizontal y verticalmente
+    textAlign(CENTER); // Centra el texto horizontal
     text("ELIGE PERSONAJE", width/2, 100)
+
+    textSize(25);
+    text("NOMBRE:", width/2, 160)
+
+    textSize(15);
+    text(nombre, width/2, 180)
 
     textSize(32);
     text("MARIO", (width/2) - 300, 230)

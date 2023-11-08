@@ -12,7 +12,7 @@ class Character {
     }
 
     update(){
-        //MOVER PERSONAJE
+        //MOVER PERSONAJE Y SALTO
         if(!cloudFly){
             //no se mueve
             if(keyIsDown(RIGHT_ARROW)){
@@ -20,10 +20,6 @@ class Character {
             } else if(keyIsDown(LEFT_ARROW)) {
                 this.positionX -= this.speed * 1,5;
             }
-        }
-
-        //SALTAR
-        if(!cloudFly){
             if (keyIsDown(UP_ARROW) && !this.isJumping){
                 if(!this.isJumping){
                     this.positionY -= this.gravity * 5;
@@ -60,8 +56,8 @@ class Character {
             this.positionY < cube.positionY
         ));
         
+        //SI COLISIONA CON EL CUBO, LA POSICION ES LA DEL CUBO Y PUEDE SALTAR
         if (collidingCube) {
-            // Detener la caída y ajustar la posición
             this.positionY = collidingCube.positionY - this.imgCharacter.height;
             this.isJumping = false;
         }
@@ -100,25 +96,23 @@ class Character {
     }
 
     isCollidingCoins(coins){
-        for (i = coins.length - 1; i >= 0; i--) {
-            const coin = coins[i];
+        coins.forEach((coin, index) => {
             if (
                 this.positionX + this.imgCharacter.width > coin.positionX &&
                 this.positionX < coin.positionX + coin.imgCoin.width &&
                 this.positionY + this.imgCharacter.height >= coin.positionY &&
                 this.positionY < coin.positionY
             ) {
-                // Incrementar contador de monedas recolectadas
+                //AÑADE UNA MONEDA Y LA ELIMINA
                 this.coinsCollected++;
-                if(this.coinsCollected === 1){
+                if (this.coinsCollected === 10) {
                     actualLevel++;
                     clear();
                     setup();
                 }
-                // Eliminar la moneda del array
-                coins.splice(i, 1);
+                coins.splice(index, 1);
             }
-        }
+        });        
     }
 
     isCollidingCloud(cloud){
@@ -136,18 +130,17 @@ class Character {
         }
     }
 
-    isCollidingFireBall(fireballs){
-        for(i=0; i<fireballs.length; i++){
-            let fireball = fireballs[i];
-            if (
-                this.positionX + this.imgCharacter.width > fireball.positionX &&
-                this.positionX < fireball.positionX + fireball.imgFireBallUp.width &&
-                this.positionY + this.imgCharacter.height >= fireball.positionY &&
-                this.positionY < fireball.positionY
-            ) {
-                finish = true;
-            }
-    }
+    isCollidingFireBall(fireballs) {
+        const collidingFireBall = fireballs.find(fireball => (
+            this.positionX + this.imgCharacter.width > fireball.positionX &&
+            this.positionX < fireball.positionX + fireball.imgFireBallUp.width &&
+            this.positionY + this.imgCharacter.height >= fireball.positionY &&
+            this.positionY < fireball.positionY
+        ));
+    
+        if (collidingFireBall) {
+            finish = true;
+        }
     }
 
     isCollidingCastle(castle){
@@ -162,19 +155,18 @@ class Character {
         }
     }
 
-    isCollidingAttack(attacks){
-        for(i = 0; i<attacks.length; i++){
-            let attack = attacks[i];
+    isCollidingAttack(attacks) {
+        attacks.forEach((attack, index) => {
             if (
                 this.positionX + this.imgCharacter.width > attack.positionX &&
                 this.positionX < attack.positionX + attack.imgAttack.width &&
                 this.positionY + this.imgCharacter.height >= attack.positionY &&
                 this.positionY < attack.positionY + attack.imgAttack.height
-            ){
+            ) {
                 this.life--;
-                attacks.splice(i, 1);
+                attacks.splice(index, 1);
             }
-        }
+        });
     }
     
     draw(){
