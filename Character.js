@@ -35,7 +35,6 @@ class Character {
 
         //FINISH
         if(finish){
-            console.log("finish")
             this.life--;
             this.positionX = positionInitialX;
             this.positionY = positionInitialY;
@@ -43,19 +42,19 @@ class Character {
             finish = false;
         }
 
+        //GAMEOVER
         if(this.life <= 0){
             gameOver = true;
         }
     }
 
     isCollidingCube(cubes){
-        const collidingCube = cubes.find(cube => (
+        let collidingCube = cubes.find(cube => (
             this.positionX + this.imgCharacter.width > cube.positionX &&
             this.positionX < cube.positionX + cube.imgCube.width &&
             this.positionY + this.imgCharacter.height >= cube.positionY &&
             this.positionY < cube.positionY
         ));
-        
         //SI COLISIONA CON EL CUBO, LA POSICION ES LA DEL CUBO Y PUEDE SALTAR
         if (collidingCube) {
             this.positionY = collidingCube.positionY - this.imgCharacter.height;
@@ -71,6 +70,7 @@ class Character {
                 this.positionY + this.imgCharacter.height >= pipe.positionY &&
                 this.positionY < pipe.positionY
             ) {
+                //SI COLISIONA QUE SE ESCONDA LA TUBERIA
                 this.positionY = pipe.positionY - this.imgCharacter.height;
                 this.isJumping = false;
                 pipeVisible = false;
@@ -78,20 +78,15 @@ class Character {
         }
 
     isCollidingFires(img){
+        //SI TOCA LOS FUEGOS FINISH
         if(this.positionY + this.imgCharacter.height > height - img.height){
             finish = true;        
         }
+        //SE REGENERA LA NUBE
         if(cloudFly && finish){
             cloudMario.positionX = 230;
             cloudMario.positionY = 500;
             cloudFly = false;
-        }
-    }
-
-    isCollidingFloor(img){
-        if(this.positionY + this.imgCharacter.height > height - img.height){
-            this.positionY = height - img.height - this.imgCharacter.height - 2;
-            this.isJumping = false;
         }
     }
 
@@ -105,7 +100,7 @@ class Character {
             ) {
                 //AÑADE UNA MONEDA Y LA ELIMINA
                 this.coinsCollected++;
-                if (this.coinsCollected === 10) {
+                if (this.coinsCollected === 1) {
                     actualLevel++;
                     clear();
                     setup();
@@ -168,7 +163,7 @@ class Character {
             }
         });
     }
-    
+
     draw(){
         image(this.imgCharacter, this.positionX, this.positionY)
     }

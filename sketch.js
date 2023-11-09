@@ -3,7 +3,8 @@ let character;
 let bowser;
 
 let player;
-let nombre;
+let nombre = '';
+let difficult;
 
 let fire;
 
@@ -47,21 +48,68 @@ let cloudFly = false;
 
 let firstTime = true;
 
+let speedCubeAndCoins = 3;
+let speedFireballs = 5;
+let speedAttacksBowser = 1000;
+
+let tiempoUltimoAtaque;
+
+
+
 //NIVELES
 let actualLevel = 0;
 
 function mostrarJuego() {
-    const name = document.getElementById('name');
-    const firstScreen = document.getElementById('firstScreen');
-    const game = document.getElementById('game');
+
+    document.getElementById('firstScreen').style.display = 'none';
+    document.getElementById('game').style.display = 'block';;
 
     // Obtener el valor del input y mostrarlo en div2
-        nombre = name.value;
+    nombre = document.getElementById('name').value;
     
+    
+}
 
-    // Ocultar div1 y mostrar div2
-    firstScreen.style.display = 'none';
-    game.style.display = 'block';
+function selectButton(id) {
+    let buttons = document.querySelectorAll('button');
+    let selectedButton = document.getElementById(id);
+
+    buttons.forEach((button) => {
+        button.classList.remove('selected');
+        button.style.transform = "translateY(0px)"; 
+    });
+
+    selectedButton.classList.add('selected');
+
+    selectedButton.style.transform = "translateY(-10px)";
+
+
+    if (id === 'easy') {
+        difficult = 1;
+        difficultFunction(1);
+    } else if (id === 'normal') {
+        difficult = 2;
+        difficultFunction(2);
+    } else if (id === 'hard') { 
+        difficult = 3;
+        difficultFunction(3);
+    }
+}
+
+function difficultFunction(difficult){
+    if (difficult === 1) {
+        speedCubeAndCoins = 3;
+        speedFireballs = 4;
+        speedAttacksBowser = 1000;
+    } else if (difficult === 2) {
+        speedCubeAndCoins = 4;
+        speedFireballs = 6;
+        speedAttacksBowser = 600;
+    } else if (difficult === 3) { 
+        speedCubeAndCoins = 5;
+        speedFireballs = 9;
+        speedAttacksBowser = 300;
+    }
 }
 
 function preload(){
@@ -142,12 +190,15 @@ function draw(){
         text("!!! VICTORIA !!!", width/2, 300);
         textSize(20);
         text("Pulsa la tecla Enter para volver a empezar", width/2, 400)
+        
         attacksBowser = [];
 
         if(keyIsDown(13)){
             actualLevel = 0;
             clear();
             setup();
+            difficult++;
+            difficultFunction(difficult);
             win = false
 
         }
@@ -176,7 +227,6 @@ function draw(){
 function level1SetUp(){
 
     cloudFly = false;
-
     finish = false;
 
     //POSICIONES INICIALES
@@ -215,8 +265,8 @@ function level1SetUp(){
 function level2SetUp(){
     cloudFly = false;
 
-    positionInitialX = 1000;
-    positionInitialY = 60;
+    positionInitialX = 10;
+    positionInitialY = 300;
 
     character = new Character(positionInitialX, positionInitialY, 20, 3.5 , player, 3);
 
@@ -239,15 +289,18 @@ function level2SetUp(){
     //ESCALERA DE CUBOS
 
     cubesLevel2 = [];
+    fires = [];
+    for(i = 0; i < 42; i++){
+        cubesLevel2.push(new Cube((imgCube.width * 7) + (imgCube.width * i), height - (1 * imgCube.height), 0, imgCube))
+    }
+    for(i = 0; i < 7; i++){
+        cubesLevel2.push(new Cube((imgCube.width * 0) + (imgCube.width * i), height - (4 * imgCube.height), 0, imgCube))
+    }
 
-    for(i = 0; i < 5; i++){
-        cubesLevel2.push(new Cube((imgCube.width * 5) + (imgCube.width * i), height - (2 * imgCube.height), 0, imgCube))
-    }
-    for(i = 0; i < 4; i++){
-        cubesLevel2.push(new Cube((imgCube.width * 6) + (imgCube.width * i), height - (3 * imgCube.height), 0, imgCube))
-    }
-    for(i = 0; i < 3; i++){
-        cubesLevel2.push(new Cube((imgCube.width * 7) + (imgCube.width * i), height - (4 * imgCube.height), 0, imgCube))
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            cubesLevel2.push(new Cube((imgCube.width * 7) + (imgCube.width * j), height - (2 * imgCube.height) - (imgCube.height * i), 0, imgCube));
+        }
     }
 
     //CUBO 3X3
@@ -275,9 +328,9 @@ function level2SetUp(){
 
     //BOLAS DE FUEGO
     fireballs = [];
-    fireballs.push (new FireBall (325, 520, 5, imgFireBallUp, imgFireBallDown))
+    fireballs.push (new FireBall (325, 520, speedFireballs-1, imgFireBallUp, imgFireBallDown))
     for(i=0; i < 5; i++){
-        fireballs.push(new FireBall(490 + (120*i), 520, 6+i, imgFireBallUp, imgFireBallDown))
+        fireballs.push(new FireBall(490 + (120*i), 520, speedFireballs+i, imgFireBallUp, imgFireBallDown))
     }
 
     //LAVAS
@@ -286,14 +339,7 @@ function level2SetUp(){
         lavas.push(new FireBall(300 + (i*180) , height - imgLava.height - imgCube.height , 0, imgLava))
     }
 
-    //SUELO DE CUBE - UNA FILA
-    fires = [];
-
-    for (aux = 0; aux < width; aux += imgCube.width) {
-        fires.push(new Fire(aux, height - imgCube.height, 0, imgCube));
-    }
-
-    fires.forEach((fire) => fire.draw())
+    
 
     //CASTILLO
     castle = new Fire(1100, 340, 0, imgCastle)
@@ -305,6 +351,9 @@ function level3SetUp(){
     positionInitialX = 50;
     positionInitialY = 450;
 
+    tiempoUltimoAtaque = 0;
+
+
     character = new Character(positionInitialX, positionInitialY, 20, 3.5 , player, 3);
     bowser = new Character(800, 300, 1, 3.5, imgBowser, 10)
 
@@ -315,7 +364,8 @@ function level3SetUp(){
         lifesMario.push(new Life(positionFirstLifeMario, 30, imgLife))
         positionFirstLifeMario -= 35;
     }
-    positionFirstLifeBowser = 1150;
+    lifesBowser = [];
+    let positionFirstLifeBowser = 1150;
     for(i = 0; i < bowser.life; i++){
         lifesBowser.push(new Life(positionFirstLifeBowser, 60, imgLifeBowser))
         positionFirstLifeBowser -= 35;
@@ -335,23 +385,24 @@ function level3SetUp(){
     attacks = [];
 
     //ATAQUE BOWSER - MARIO
-    if(firstTime){
-        setInterval(function() {
-            attacksBowser.push(new BallAttack(bowser.positionX, bowser.positionY + 15, 7, imgAttackFireBllBowser))
-            attacksBowser[i].moveMario();
-            attacksBowser[i].draw();
-            i++; // Aumenta el valor de i para cada ataque
-        }, 500);
-        firstTime = false;
-
-    }   
+    // if(firstTime){
+    //     setInterval(function() {
+    //         attacksBowser.push(new BallAttack(bowser.positionX, bowser.positionY + 15, 7, imgAttackFireBllBowser))
+    //         attacksBowser[i].moveMario();
+    //         attacksBowser[i].draw();
+    //         i++; // Aumenta el valor de i para cada ataque
+    //     }, 500);
+    //     firstTime = false;
+    // }   
 }
 
 function drawLevel1(){
 
     //NOMBRE
     textSize(20)
-    text(nombre, width/2, 50);
+    fill(0)
+    textAlign(LEFT)
+    text(nombre,50, 50);
 
     //DIBUJA LOS CORAZONES DE VIDA
     for (i = 0; i < character.life; i++) {
@@ -361,8 +412,8 @@ function drawLevel1(){
     //CUBOS ALEATORIAMENTE
     let random = Math.floor(Math.random() * (400 - 300 + 1)) + 300;
     
-    cubesLevel1.push(new Cube(lastPositionCubeX, random, 3, imgCube));
-    coins.push(new Coin(lastPositionCubeX - 10, random - 75, 3, imgCoin))
+    cubesLevel1.push(new Cube(lastPositionCubeX, random, speedCubeAndCoins, imgCube));
+    coins.push(new Coin(lastPositionCubeX - 10, random - 75, speedCubeAndCoins, imgCoin))
     lastPositionCubeX += 205;
     
     for(i = cubesLevel1.length - 1 ; i >= 0 ; i--){
@@ -402,6 +453,13 @@ function drawLevel1(){
 }
 
 function drawLevel2(){
+
+    //NOMBRE
+    textSize(20)
+    fill(250)
+    textAlign(LEFT)
+    text(nombre,50, 50);
+
     //DIBUJA VIDAS
     for (i = 0; i < character.life; i++) {
         lifesMario[i].draw();
@@ -431,7 +489,6 @@ function drawLevel2(){
     //COLISIONES
     finish = false;
 
-    character.isCollidingFloor(imgCube);
     character.isCollidingCube(cubesLevel2);
     character.isCollidingFireBall(fireballs);
     character.isCollidingFireBall(lavas);
@@ -450,12 +507,18 @@ function drawLevel2(){
 
 function drawLevel3(){
 
+    //NOMBRE
+    textSize(20)
+    fill(250)
+    textAlign(LEFT)
+    text(nombre,50, 50);
+
     //BLOQUES INICIALES
     fires.forEach((fire) => fire.draw())
 
     //ATAQUES MARIO - BOWSER
     if(cloudFly){
-        if(keyIsDown(32) && onlyOneAttack === true){
+        if(keyIsDown(32) && onlyOneAttack){
             attacks.push(new BallAttack(character.positionX, character.positionY + 15  , 7, imgAttackFireBll))
             onlyOneAttack = false;
         }
@@ -471,6 +534,11 @@ function drawLevel3(){
     }
 
     //ATAQUES BOWSER - MARIO
+    if (millis() - tiempoUltimoAtaque > speedAttacksBowser) {
+        attacksBowser.push(new BallAttack(bowser.positionX, bowser.positionY + 15, 7, imgAttackFireBllBowser))
+        tiempoUltimoAtaque = millis(); 
+    }
+
     attacksBowser.forEach((attack) => {
         attack.moveBowser();
         attack.draw();
@@ -531,7 +599,6 @@ function keyPressed() {
 }
 
 function drawLevel0(){
-
     fill(250);
     textSize(52);
     textFont(marioFont);
@@ -554,6 +621,8 @@ function drawLevel0(){
 
     image(seleccionMario, (width/2 - 76) - 300, 250, 152, 200)
     image(seleccionLuigi,(width/2 - 76) + 300, 250, 152, 200)
+
+    text("DIFICULTAD: " +  difficult,  width/2, 600)
 
 }
 
