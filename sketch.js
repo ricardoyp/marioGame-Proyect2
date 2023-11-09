@@ -54,8 +54,6 @@ let speedFireballs = 5;
 let speedAttacksBowser = 1000;
 
 let tiempoUltimoAtaque;
-let coinSound;
-
 
 //NIVELES
 let actualLevel = 0;
@@ -122,7 +120,6 @@ function preload(){
     seleccionMario = loadImage('./imgs/seleccionMario.png')
     seleccionLuigi = loadImage('./imgs/seleccionLuigi.png')
 
-
     imgFire = loadImage('./imgs/fire.gif')
     imgCube = loadImage('./imgs/bloque.png')
     imgLife = loadImage('./imgs/heart.png')
@@ -146,28 +143,33 @@ function preload(){
     coinSound = loadSound('./sounds/coinSound.mp3')
     jumpSound = loadSound('./sounds/jumpSound.mp3')
     looserSound = loadSound('./sounds/looserSound.mp3')
+    gameOverSound = loadSound('./sounds/gameOver.mp3')
+    winSound =  loadSound('./sounds/winSound.mp3')
+
+    gameSound = loadSound('./sounds/game.mp3')
 
 }
 
-
-
 function setup() {
 
-    player = luigiImg;
+    //player = luigiImg;
     textFont(marioFont);
 
     let canvas = createCanvas(1250, 600)
     canvas.parent('juego')
 
-
+    gameSound.stop();
     if(actualLevel === 1){
         level1SetUp();
+        gameSound.play();
     }
     if(actualLevel === 2){
         level2SetUp();
+        gameSound.play();
     }
     if(actualLevel === 3){
         level3SetUp();
+        gameSound.play();
     }
 }
 
@@ -175,6 +177,9 @@ function draw(){
 
     if(gameOver){
         clear();
+
+        gameSound.stop();
+
         fill(250);
         textSize(52);
         textFont(marioFont);
@@ -188,10 +193,12 @@ function draw(){
             actualLevel = 0;
             clear();
             setup();
+            difficultFunction(1);
         }
     }
     if(win){
         clear();
+        gameSound.stop();
         fill(250);
         textSize(55);
         textFont(marioFont);
@@ -208,6 +215,8 @@ function draw(){
             setup();
             difficult++;
             difficultFunction(difficult);
+            winSound.play();
+
             win = false
 
         }

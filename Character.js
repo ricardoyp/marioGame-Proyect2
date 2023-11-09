@@ -46,6 +46,7 @@ class Character {
         //GAMEOVER
         if(this.life <= 0){
             gameOver = true;
+            gameOverSound.play()
         }
     }
 
