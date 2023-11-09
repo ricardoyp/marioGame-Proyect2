@@ -4,7 +4,8 @@ let bowser;
 
 let player;
 let nombre = '';
-let difficult;
+let difficult = 1;
+let objetivo;
 
 let fire;
 
@@ -53,7 +54,7 @@ let speedFireballs = 5;
 let speedAttacksBowser = 1000;
 
 let tiempoUltimoAtaque;
-
+let coinSound;
 
 
 //NIVELES
@@ -62,7 +63,8 @@ let actualLevel = 0;
 function mostrarJuego() {
 
     document.getElementById('firstScreen').style.display = 'none';
-    document.getElementById('game').style.display = 'block';;
+    document.getElementById('game').style.display = 'block';
+    document.getElementById('objetivo').style.display = 'block';
 
     // Obtener el valor del input y mostrarlo en div2
     nombre = document.getElementById('name').value;
@@ -113,6 +115,7 @@ function difficultFunction(difficult){
 }
 
 function preload(){
+
     marioImg = loadImage('./imgs/mario.png')
     luigiImg = loadImage('./imgs/luigi.png')
 
@@ -139,12 +142,18 @@ function preload(){
     imgMarioWin = loadImage ('./imgs/win.gif')
 
     marioFont = loadFont('SuperMario256.ttf');
+    
+    coinSound = loadSound('./sounds/coinSound.mp3')
+    jumpSound = loadSound('./sounds/jumpSound.mp3')
+    looserSound = loadSound('./sounds/looserSound.mp3')
 
 }
 
+
+
 function setup() {
 
-    //player = luigiImg;
+    player = luigiImg;
     textFont(marioFont);
 
     let canvas = createCanvas(1250, 600)
@@ -154,7 +163,7 @@ function setup() {
     if(actualLevel === 1){
         level1SetUp();
     }
-    if (actualLevel === 2){
+    if(actualLevel === 2){
         level2SetUp();
     }
     if(actualLevel === 3){
@@ -208,18 +217,22 @@ function draw(){
     if(actualLevel === 0 && !gameOver && !win){
         background(0);
         drawLevel0();
+        document.getElementById("objetivo").innerHTML = "";
     }
     if(actualLevel === 1 && !gameOver && !win){
         background(99, 152, 251);
         drawLevel1();
+        document.getElementById("objetivo").innerHTML = "Consigue 10 monedas 💰"
     }
     if(actualLevel === 2 && !gameOver && !win){
         background(180, 0, 0);
         drawLevel2();
+        document.getElementById("objetivo").innerHTML = "Llega al castillo 🏰"
     }
     if(actualLevel === 3 && !gameOver && !win){
         background(imgCastleWallPaper);
         drawLevel3();
+        document.getElementById("objetivo").innerHTML = "Derrota a Bowser 🦖 disparando con la tecla espacio"
     } 
 
 }
@@ -378,7 +391,7 @@ function level3SetUp(){
     }
 
     //NUBES
-    cloudMario = new Cloud (230, 500, 3, imgCloud);
+    cloudMario = new Cloud (200, 530, 3, imgCloud);
     cloudBowser = new Cloud(800, 360, 3, imgCloud);
 
     //ATAQUES BOWSER Y MARIO
@@ -439,7 +452,7 @@ function drawLevel1(){
     //COLISIONES
     character.isCollidingPipe(pipe);
     character.isCollidingCube(cubesLevel1);
-    character.isCollidingCoins(coins);
+    character.isCollidingCoins(coins);    
     character.isCollidingFires(imgFire);
 
     //DIBUJA MARIO 

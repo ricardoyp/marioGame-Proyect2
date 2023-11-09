@@ -20,8 +20,9 @@ class Character {
             } else if(keyIsDown(LEFT_ARROW)) {
                 this.positionX -= this.speed * 1,5;
             }
-            if (keyIsDown(UP_ARROW) && !this.isJumping){
+            if (keyIsDown(UP_ARROW)){
                 if(!this.isJumping){
+                    jumpSound.play();
                     this.positionY -= this.gravity * 5;
                     this.isJumping = true;
                 }           
@@ -100,14 +101,16 @@ class Character {
             ) {
                 //AÑADE UNA MONEDA Y LA ELIMINA
                 this.coinsCollected++;
-                if (this.coinsCollected === 1) {
+                if (this.coinsCollected === 10) {
                     actualLevel++;
                     clear();
                     setup();
                 }
                 coins.splice(index, 1);
+                coinSound.play();
             }
         });        
+    
     }
 
     isCollidingCloud(cloud){
