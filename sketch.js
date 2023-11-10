@@ -8,27 +8,30 @@ let difficult = 1;
 let objetivo;
 
 let fire;
-
-let lifesMario = [];
-let lifesBowser = [];
-
 let pipe;
 let coinCount;
 let cloud;
 let cloudMario;
+let cloudBowser;
+let castle;
+
+let lifesMario = [];
+let lifesBowser = [];
 let cubesLevel1 = [];
 let cubesLevel2 = [];
 let attacks = [];
 let attacksBowser = [];
-
-let onlyOneAttack;
 
 let coins = [];
 let coinsLevel2 = [];
 let fires = [];
 let fireballs = [];
 let lavas = [];
-let castle;
+
+//MODOS DE JUEGO
+let speedCubeAndCoins = 3;
+let speedFireballs = 5;
+let speedAttacksBowser = 1000;
 
 //FUENTE
 let marioFont;
@@ -38,6 +41,8 @@ let lastPositionCubeX;
 let positionInitialX;
 let positionInitialY;
 let pipePosition = -30;
+let onlyOneAttack;
+let tiempoUltimoAtaque;
 
 //BOOLEANOS
 let finish = false;
@@ -46,14 +51,7 @@ let gameOver = false;
 
 let pipeVisible = true;
 let cloudFly = false;
-
 let firstTime = true;
-
-let speedCubeAndCoins = 3;
-let speedFireballs = 5;
-let speedAttacksBowser = 1000;
-
-let tiempoUltimoAtaque;
 
 //NIVELES
 let actualLevel = 0;
@@ -64,13 +62,13 @@ function mostrarJuego() {
     document.getElementById('game').style.display = 'block';
     document.getElementById('objetivo').style.display = 'block';
 
-    // Obtener el valor del input y mostrarlo en div2
     nombre = document.getElementById('name').value;
     
     
 }
 
 function selectButton(id) {
+
     let buttons = document.querySelectorAll('button');
     let selectedButton = document.getElementById(id);
 
@@ -114,12 +112,11 @@ function difficultFunction(difficult){
 
 function preload(){
 
+    //IMAGENES
     marioImg = loadImage('./imgs/mario.png')
     luigiImg = loadImage('./imgs/luigi.png')
-
     seleccionMario = loadImage('./imgs/seleccionMario.png')
     seleccionLuigi = loadImage('./imgs/seleccionLuigi.png')
-
     imgFire = loadImage('./imgs/fire.gif')
     imgCube = loadImage('./imgs/bloque.png')
     imgLife = loadImage('./imgs/heart.png')
@@ -138,14 +135,15 @@ function preload(){
     imgAttackFireBllBowser = loadImage('./imgs/AttackFireballBowser.gif')
     imgMarioWin = loadImage ('./imgs/win.gif')
 
+    //FUENTE
     marioFont = loadFont('SuperMario256.ttf');
     
+    //SONIDOS
     coinSound = loadSound('./sounds/coinSound.mp3')
     jumpSound = loadSound('./sounds/jumpSound.mp3')
     looserSound = loadSound('./sounds/looserSound.mp3')
     gameOverSound = loadSound('./sounds/gameOver.mp3')
     winSound =  loadSound('./sounds/winSound.mp3')
-
     gameSound = loadSound('./sounds/game.mp3')
 
 }
@@ -177,7 +175,6 @@ function draw(){
 
     if(gameOver){
         clear();
-
         gameSound.stop();
 
         fill(250);
@@ -188,6 +185,7 @@ function draw(){
 
         textSize(22);
         text("PULSA LA TECLA ENTER PARA VOLVER A EMPEZAR", width/2, 360)
+
         if(keyIsDown(13)){
             gameOver = false;
             actualLevel = 0;
@@ -213,7 +211,9 @@ function draw(){
             actualLevel = 0;
             clear();
             setup();
-            difficult++;
+            if(difficult<3){
+                difficult++;
+            }
             difficultFunction(difficult);
             winSound.play();
 
@@ -459,6 +459,7 @@ function drawLevel1(){
     character.update();
 
     //COLISIONES
+    character.isCollidingCanvas();
     character.isCollidingPipe(pipe);
     character.isCollidingCube(cubesLevel1);
     character.isCollidingCoins(coins);    
@@ -510,7 +511,7 @@ function drawLevel2(){
 
     //COLISIONES
     finish = false;
-
+    character.isCollidingCanvas();
     character.isCollidingCube(cubesLevel2);
     character.isCollidingFireBall(fireballs);
     character.isCollidingFireBall(lavas);
@@ -569,6 +570,7 @@ function drawLevel3(){
     character.update();
 
     //COLISIONES MARIO
+    character.isCollidingCanvas();
     character.isCollidingCube(fires)
     character.isCollidingCloud(cloudMario)
     character.isCollidingFires(imgLife);

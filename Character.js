@@ -50,6 +50,21 @@ class Character {
         }
     }
 
+    isCollidingCanvas(){
+        if (this.positionX < 0) {
+            this.positionX = 0;
+        }
+        if (this.positionX + this.imgCharacter.width > width) {
+            this.positionX = width - this.imgCharacter.width;
+        }
+        if (this.positionY < 0) {
+            this.positionY = 0;
+        }
+        if (this.positionY + this.imgCharacter.height > height) {
+            this.positionY = height - this.imgCharacter.height;
+        }
+    }
+
     isCollidingCube(cubes){
         let collidingCube = cubes.find(cube => (
             this.positionX + this.imgCharacter.width > cube.positionX &&
@@ -121,6 +136,7 @@ class Character {
             this.positionY + this.imgCharacter.height >= cloud.positionY &&
             this.positionY < cloud.positionY
         ) {
+            //SOLO PARA MARIO
             if(this !== bowser) {
                 cloudFly = true;
             }
@@ -136,7 +152,7 @@ class Character {
             this.positionY + this.imgCharacter.height >= fireball.positionY &&
             this.positionY < fireball.positionY
         ));
-    
+        //SI COLISIONA CON FIREBALL, MUERE
         if (collidingFireBall) {
             finish = true;
         }
@@ -162,6 +178,7 @@ class Character {
                 this.positionY + this.imgCharacter.height >= attack.positionY &&
                 this.positionY < attack.positionY + attack.imgAttack.height
             ) {
+                //SI COLISIONA, RESTA VIDA Y BORRA ATAQUE
                 this.life--;
                 attacks.splice(index, 1);
             }
@@ -171,6 +188,5 @@ class Character {
     draw(){
         image(this.imgCharacter, this.positionX, this.positionY)
     }
-
 
 }

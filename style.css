@@ -1,11 +1,11 @@
 @font-face {
-    font-family: 'NombreDeLaFuente';
+    font-family: 'marioFont';
     src: url('SuperMarioBros.ttf') format('truetype');
 }
 
 * {
     background-color: black;
-    font-family: 'NombreDeLaFuente';
+    font-family: 'marioFont';
 }
 
 .hidden {
@@ -79,4 +79,10 @@ input:focus {
 #objetivo {
     font-size: 30px;
     padding-top: 15px;
+}
+
+#juego {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
