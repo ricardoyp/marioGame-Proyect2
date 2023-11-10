@@ -619,6 +619,9 @@ function keyPressed() {
             setup();
         }
     }
+    if(key === '0'){
+        gameSound.stop();
+    }
     
 }
 
