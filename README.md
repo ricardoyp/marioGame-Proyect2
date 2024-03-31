@@ -10,3 +10,9 @@ Este proyecto de frontend te permite jugar un clásico juego de plataformas simi
 - **Interfaz intuitiva:** El juego presenta una interfaz sencilla y fácil de usar.
 
 ### https://ricardoyp.github.io/marioGame-Proyect2/
+<img width="640" src="https://github.com/ricardoyp/marioGame-Proyect2/assets/145460649/a1566434-b272-42ab-8d2f-dab929cda67b">
+<img width="640" src="https://github.com/ricardoyp/marioGame-Proyect2/assets/145460649/44d2e438-cf41-4480-9a8c-03535b262e4e">
+<img width="640" src="https://github.com/ricardoyp/marioGame-Proyect2/assets/145460649/8f9ce144-0b08-418b-9f46-7e970455e633">
+<img width="640" src="https://github.com/ricardoyp/marioGame-Proyect2/assets/145460649/81376eee-415b-4526-a03b-43564deb75d3">
+<img width="640" src="https://github.com/ricardoyp/marioGame-Proyect2/assets/145460649/ca065b91-a550-480e-a93d-44b56aa4d576">
+
